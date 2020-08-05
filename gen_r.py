@@ -135,3 +135,6 @@ def generate(turns, arc, ):
     tra_list = tra_list + tra_3
 
     return tra_list
+
+# TODO(zf): 进入离开，两段直线
+

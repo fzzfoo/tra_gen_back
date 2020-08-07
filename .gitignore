@@ -1,2 +1,6 @@
 *.png
 gen.py
+*.txt
+other
+*.html
+args.py

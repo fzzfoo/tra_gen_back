@@ -1,7 +1,9 @@
 import numpy as np
 import math
 from math import sin, asin, cos, radians, fabs, sqrt, pi, degrees
+from args import args_of_eight
 
+args = args_of_eight()
 EARTH_RADIUS = 6371
 RADIUS_1 = 200  # kilometers
 RADIUS_2 = 200  # km
@@ -83,7 +85,7 @@ def generate_clw(pre_angle, arc,):
             tra_0.append((next_lng, next_lat))
         else:
             break
-    return tra_0, pre_angle-2*pi
+    return tra_0, (pre_angle-2*pi)*RADIUS_1/RADIUS_2
 
 
 def generate_clw_tail(pre_angle, arc, angle_out):
@@ -111,7 +113,7 @@ def generate_anticlw(pre_angle, arc,):
             tra_1.append((next_lng, next_lat))
         else:
             break
-    return tra_1, pre_angle-2*pi
+    return tra_1, (pre_angle-2*pi) * RADIUS_2 / RADIUS_1
 
 
 def generate(turns, arc, ):
@@ -138,3 +140,15 @@ def generate(turns, arc, ):
 
 # TODO(zf): 进入离开，两段直线
 
+
+# def imagefigure():
+#     traject = np.loadtxt("data.txt")
+#     for i in range(len(traject)):
+#         traject[i] = traject[i][::-1]
+#     my_map = folium.Map(location=[traject[0][0], traject[-1][1]], zoom_start=7, control_scale=True)
+#     folium.PolyLine(traject, color='blue', weight=1, opacity=1).add_to(my_map)
+#     marker_cluster = plugins.MarkerCluster().add_to(my_map)
+#     for i in range(len(traject)):
+#         folium.Marker([traject[i][0], traject[i][1]]).add_to(marker_cluster)
+#     my_map.add_child(folium.LatLngPopup())
+#     my_map.save('my_map.html')

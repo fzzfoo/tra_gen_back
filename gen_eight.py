@@ -1,20 +1,20 @@
 from math import sin, asin, cos, radians, fabs, sqrt, pi, degrees
 import numpy as np
 from args import args_of_eight
+from visual import imagefigure, geoDegree
+
 
 args = args_of_eight()
 EARTH_RADIUS = args.EARTH_RADIUS  # 地球半径 6371
 
 RADIUS_1_LNG = 116.1  # 圆1经度
 RADIUS_1_LAT = 39.7  # 经度
-RADIUS_2_LNG = 116.1
+RADIUS_2_LNG = 120.1
 RADIUS_2_LAT = 39.7 + 3.5972864236749222
 RADIUS_1 = 200  # 圆1半径
 #
-RANDOM_ERR = 0.01
+RANDOM_ERR = 0
 SPEED = 20  # km/min
-
-# TODO(zf)：斜着
 
 
 def hav(theta):
@@ -41,6 +41,7 @@ def get_distance(lat0, lng0, lat1, lng1):
 
 
 RADIUS_2 = get_distance(RADIUS_2_LAT, RADIUS_2_LNG, RADIUS_1_LAT, RADIUS_1_LNG) - RADIUS_1
+ANG = geoDegree(RADIUS_1_LNG, RADIUS_1_LAT, RADIUS_2_LNG, RADIUS_2_LAT)  # pi / 4
 
 
 def next_point_clw(arc_len, previous_angle, RADIUS, RADIUS_LNG, RADIUS_LAT):
@@ -102,11 +103,12 @@ def generate_clw(pre_angle, arc, ):
     while True:
         next_lng, next_lat, pre_angle = next_point_clw(arc, pre_angle,
                                                        RADIUS_1, RADIUS_1_LNG, RADIUS_1_LAT)
-        if pre_angle > 0:
+        if pre_angle > 0 - ANG:
             tra_0.append((next_lng, next_lat))
         else:
             break
-    return tra_0, (-pre_angle) * RADIUS_1 / RADIUS_2
+    pre_angle = 0 - ANG - (arc - (0 - ANG - pre_angle) * RADIUS_1) / RADIUS_2
+    return tra_0, pre_angle  # (0 - ANG - pre_angle) * RADIUS_1 / RADIUS_2
 
 
 def generate_clw_tail(pre_angle, arc, angle_out, ):
@@ -121,7 +123,7 @@ def generate_clw_tail(pre_angle, arc, angle_out, ):
     while True:
         next_lng, next_lat, pre_angle = next_point_clw(arc, pre_angle,
                                                        RADIUS_1, RADIUS_1_LNG, RADIUS_1_LAT)
-        if pre_angle > angle_out:
+        if pre_angle > angle_out - ANG:
             tra_3.append((next_lng, next_lat))
         else:
             tra_3.append((next_lng, next_lat))
@@ -137,11 +139,12 @@ def generate_anticlw(pre_angle, arc,):
     while True:
         next_lng, next_lat, pre_angle = next_point_anticlw(arc, pre_angle,
                                                            RADIUS_2, RADIUS_2_LNG, RADIUS_2_LAT)
-        if pre_angle < 2 * pi:
+        if pre_angle < 2 * pi - ANG:
             tra_1.append((next_lng, next_lat))
         else:
             break
-    return tra_1, (pre_angle - 2 * pi) * RADIUS_2 / RADIUS_1 + 2*pi
+    pre_angle = (arc - (pre_angle - 2*pi + ANG) * RADIUS_2) / RADIUS_1 + 2*pi - ANG
+    return tra_1, pre_angle  # (2 * pi - ANG - pre_angle) * RADIUS_2 / RADIUS_1 + 2*pi
 
 
 def random_err():
@@ -163,7 +166,7 @@ def generate_eightshaped_tra(turns, arc, ):
 
     tra_list = []
     angle_in, angle_out = in_out_point()
-    next_lng, next_lat, pre_angle = next_point_clw(0, angle_in,
+    next_lng, next_lat, pre_angle = next_point_clw(0, angle_in - ANG,
                                                    RADIUS_1, RADIUS_1_LNG, RADIUS_1_LAT)  # 起点坐标
 
     tra_list.append((next_lng, next_lat))
@@ -171,15 +174,24 @@ def generate_eightshaped_tra(turns, arc, ):
     for i in range(turns):
         tra_1, pre_angle = generate_clw(pre_angle, arc,)
         tra_list = tra_list + tra_1
-        tra_2, pre_angle = generate_anticlw(0, arc,)
+        # pre_angle = pre_angle - ANG  # 放函数里
+        tra_2, pre_angle = generate_anticlw(pre_angle, arc,)
         tra_list = tra_list + tra_2
+        # pre_angle = pre_angle - ANG
 
     tra_3 = generate_clw_tail(pre_angle, arc, angle_out,)
     tra_list = tra_list + tra_3
 
     print("生成轨迹 1 条")
+    print(len(tra_1))
+    print(len(tra_2))
+    print(len(tra_3))
+    print(tra_1[-1])
+    print(tra_2[-1])
+    print(tra_3[:2])
 
-    return tra_list
+
+    return tra_list  # tra_1 + tra_2
 
 
 # def imagefigure():
@@ -201,3 +213,7 @@ def generate_eightshaped_tra(turns, arc, ):
 # imagefigure()
 
 # print(get_distance(39.6924, 113.7084, 39.7, 113.7806))
+
+tra_e = generate_eightshaped_tra(1, 15)
+imagefigure(tra_e)
+

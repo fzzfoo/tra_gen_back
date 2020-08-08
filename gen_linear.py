@@ -53,20 +53,21 @@ def random_err():
 
 def get_new_lat(lng, lat, dist, flag2):
     e_lat = random_err()[0]
-    lat1 = (1 + e_lat) * (flag2 * 180 * dist / (EARTH_RADIUS * pi)) + lat
-    return lat1
+    lat_increase = flag2 * degrees(dist / EARTH_RADIUS)
+    new_lat = lat + lat_increase * (1 + e_lat)
+    return new_lat
 
 
 def get_new_lng(lng, lat, dist, flag1):
     e_lng = random_err()[1]
-    temp = flag1 * (180 * dist / (EARTH_RADIUS * pi * cos(radians(lat))))
-    res = lng + temp * (1 + e_lng)
-    return res
+    lng_increase = flag1 * degrees(dist / (EARTH_RADIUS * cos(radians(lat))))
+    new_lng = lng + lng_increase * (1 + e_lng)
+    return new_lng
 
 
 def generate_linear_tra(loc1, loc2, n):
     """
-    给定起点终点，点的个数
+    给定起点终点，距离
     :param loc1: 起点
     :param loc2:
     :param n:
@@ -82,13 +83,13 @@ def generate_linear_tra(loc1, loc2, n):
     if loc2[1] < loc1[1]:
         flag2 = -1
 
-    step1, step2 = len1 // m, len2 // m
+    step1, step2 = len1 / m, len2 / m
     arr = []
     arr += [loc1]
     for i in range(int(m)):
         arr += [[get_new_lng(arr[-1][0], arr[-1][1], step1, flag1),
                  get_new_lat(arr[-1][0], arr[-1][1], step2, flag2)]]
-    arr += [loc2]
+    # arr += [loc2]
     return arr
 
 # traject = generate(2, 15)

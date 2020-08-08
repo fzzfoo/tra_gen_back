@@ -1,6 +1,6 @@
 *.png
 gen.py
 *.txt
-other
+# other
 *.html
 args.py

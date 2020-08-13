@@ -214,6 +214,6 @@ def generate_eightshaped_tra(turns, arc, ):
 
 # print(get_distance(39.6924, 113.7084, 39.7, 113.7806))
 
-tra_e = generate_eightshaped_tra(1, 15)
+tra_e = generate_eightshaped_tra(2, 15)
 imagefigure(tra_e)
 

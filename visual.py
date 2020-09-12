@@ -5,9 +5,12 @@ from math import sin, asin, cos, radians, fabs, sqrt, pi, degrees, atan
 import math
 
 
-def imagefigure(tra=None, tras=None):
+def imagefigure(tra=None, tras=None, name='other', grid_cor=None):
     # tras多条   tra 一条
-    my_map = folium.Map(location=[tra[0][1], tra[-1][0]], zoom_start=7, control_scale=True)
+    if tra is not None:
+        my_map = folium.Map(location=[tra[0][1], tra[-1][0]], zoom_start=9, control_scale=True)
+    elif tras is not None:
+        my_map = folium.Map(location=[tras[0][0][1], tras[0][-1][0]], zoom_start=9, control_scale=True)
 
     if tra is not None:
         for i in range(len(tra)):
@@ -32,13 +35,19 @@ def imagefigure(tra=None, tras=None):
             for i in range(len(tras[j])):
                 tem = 0
                 if i != 0:
-                    tem = geoDegree(tra[i - 1][0], tra[i - 1][1], tra[i][0], tra[i][1])
+                    tem = geoDegree(tras[j][i - 1][0], tras[j][i - 1][1], tras[j][i][0], tras[j][i][1])
                 folium.Marker([tras[j][i][0], tras[j][i][1]], tooltip=str(i), popup=str(tem),
                               icon=folium.Icon(icon="fa-fighter-jet", prefix="fa",
                                                angle=(tem + (3 / 2 * pi)) % (2 * pi))).add_to(marker_cluster)
 
     my_map.add_child(folium.LatLngPopup())
-    my_map.save('my_map.html')
+    if grid_cor is not None:
+        gj = folium.GeoJson(data={"type": "MultiLineString",
+                                  "coordinates": grid_cor
+                                  })
+
+        my_map.add_child(gj)
+    my_map.save('data/map/{}_map.html'.format(name))
 
 
 def geoDegree(lng1, lat1, lng2, lat2):

@@ -53,5 +53,6 @@ def args_of_():
 
     return args_l
 
+
 if __name__ == '__main__':
     args_of_eight()

@@ -7,13 +7,13 @@ from visual import imagefigure, geoDegree
 args = args_of_eight()
 EARTH_RADIUS = args.EARTH_RADIUS  # 地球半径 6371
 
-RADIUS_1_LNG = 116.1  # 圆1经度
-RADIUS_1_LAT = 39.7  # 经度
-RADIUS_2_LNG = 120.1
-RADIUS_2_LAT = 39.7 + 3.5972864236749222
-RADIUS_1 = 200  # 圆1半径
+RADIUS_1_LNG = 116.0  # 圆1经度
+RADIUS_1_LAT = 39.5  # 经度
+RADIUS_2_LNG = 116.3  # 120.1
+RADIUS_2_LAT = 39.8  # 39.7 + 3.5972864236749222
+RADIUS_1 = 20.0  # 圆1半径
 #
-RANDOM_ERR = 0
+RANDOM_ERR = 0.01
 SPEED = 20  # km/min
 
 
@@ -41,6 +41,8 @@ def get_distance(lat0, lng0, lat1, lng1):
 
 
 RADIUS_2 = get_distance(RADIUS_2_LAT, RADIUS_2_LNG, RADIUS_1_LAT, RADIUS_1_LNG) - RADIUS_1
+print("两圆心距离:{}km".format(get_distance(RADIUS_1_LAT, RADIUS_1_LNG, RADIUS_2_LAT, RADIUS_2_LNG)))
+print("圆1半径:{}km, 圆2半径:{}km".format(RADIUS_1, RADIUS_2))
 ANG = geoDegree(RADIUS_1_LNG, RADIUS_1_LAT, RADIUS_2_LNG, RADIUS_2_LAT)  # pi / 4
 
 
@@ -182,14 +184,13 @@ def generate_eightshaped_tra(turns, arc, ):
     tra_3 = generate_clw_tail(pre_angle, arc, angle_out,)
     tra_list = tra_list + tra_3
 
-    print("生成轨迹 1 条")
-    print(len(tra_1))
-    print(len(tra_2))
-    print(len(tra_3))
-    print(tra_1[-1])
-    print(tra_2[-1])
-    print(tra_3[:2])
-
+    # print("生成轨迹 1 条")
+    # print(len(tra_1))
+    # print(len(tra_2))
+    # print(len(tra_3))
+    # print(tra_1[-1])
+    # print(tra_2[-1])
+    # print(tra_3[:2])
 
     return tra_list  # tra_1 + tra_2
 
@@ -214,6 +215,6 @@ def generate_eightshaped_tra(turns, arc, ):
 
 # print(get_distance(39.6924, 113.7084, 39.7, 113.7806))
 
-tra_e = generate_eightshaped_tra(2, 15)
-imagefigure(tra_e)
+# tra_e = generate_eightshaped_tra(2, 15)
+# imagefigure(tra_e)
 

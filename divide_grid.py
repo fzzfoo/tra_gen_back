@@ -1,5 +1,6 @@
 import numpy as np
 from math import sin, asin, cos, radians, fabs, sqrt, pi, degrees
+from gen_eight import get_distance
 
 # 给一组数据 确定左上右下边界 划分网格
 EARTH_RADIUS = 6371.0
@@ -48,13 +49,14 @@ def dist2long_lat(dist, RADIUS_LAT=39.7):
     # TODO: Right?
     long_increase = degrees(dist / (EARTH_RADIUS * cos(radians(RADIUS_LAT))))  # 经度增量
     lat_incerase = degrees(dist / EARTH_RADIUS)  # 纬度增量
-    print("{}km 转换成经纬度增量___经度：{} 纬度：{}".format(dist, long_increase, lat_incerase))
+    print("网格长{}km 转换成经纬度增量___经度：{} 纬度：{}".format(dist, long_increase, lat_incerase))
 
     return long_increase, lat_incerase
 
 
-def get_grid_num(tra_lists, dist):
+def get_grid_num(tra_lists, dist, name='None'):
     """
+    :param name:
     :param tra_lists: 多条轨迹列表
     :param dist: 网格长度
     :return:
@@ -65,7 +67,9 @@ def get_grid_num(tra_lists, dist):
     col_num = int((end_lat - origin_lat) / lat_incerase) + 1
     print("总网格数:{}*{}行={}".format(row_num, col_num, row_num * col_num))
     # tra_lists = cut_tra(tra_lists)
-    grid_cor = get_grid_cor(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num)
+    grid_cor = get_grid_boundary(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num)
+    grid_core_cor = get_grid_cor(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num)
+    grid_distance(grid_core_cor, col_num*row_num, name)
     tra_list_grid = []
     for tra in tra_lists:
         tra_grid = []
@@ -80,9 +84,9 @@ def get_grid_num(tra_lists, dist):
     return tra_list_grid, grid_cor
 
 
-def get_grid_cor(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num):
+def get_grid_boundary(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num):
     """
-    计算网格坐标
+    计算网格边界，线
     :param origin_long:
     :param origin_lat:
     :param long_increase:
@@ -121,9 +125,49 @@ def get_grid_cor(origin_long, origin_lat, long_increase, lat_incerase, row_num, 
     return cor
 
 
+def get_grid_cor(origin_long, origin_lat, long_increase, lat_incerase, row_num, col_num):
+    """
+    计算每个网格中心坐标，[[(long,lat),....], [], .......]
+    :param origin_long:
+    :param origin_lat:
+    :param long_increase:
+    :param lat_incerase:
+    :param row_num:
+    :param col_num:
+    :return:
+    """
+    origin_core_long = origin_long + long_increase/2
+    origin_core_lat = origin_lat + lat_incerase/2
+    grid_cor = []
+    for c in range(col_num):  # 行数
+        for r in range(row_num):
+            core_long = origin_core_long + r*long_increase
+            core_lat = origin_core_lat + c*lat_incerase
+            grid_cor.append((core_long, core_lat))
+    return grid_cor
+
+
+def grid_distance(cor_lists, num, name,):
+    """
+    生成距离矩阵
+    :param cor_lists:
+    :param num:  矩阵纬度
+    :param name:
+    :return:
+    """
+    dist_matirx = np.zeros((num, num), dtype=float)
+    for i in range(len(cor_lists)):
+        for j in range(len(cor_lists)):
+            dist = get_distance(cor_lists[i][1], cor_lists[i][0], cor_lists[j][1], cor_lists[j][0])
+            dist_matirx[i][j] = dist
+    np.save("{}dist_matrix.npy".format(name), dist_matirx)
+    print("保存到 {}dist_matrix.npy ".format(name))
+    return
+
+
 def cut_tra(tra_lists, length=288):
     """
-    截断轨迹到长 288
+    截断轨迹到length长 288
     :param tra_lists:
     :param length:
     :return:
@@ -148,7 +192,7 @@ def save2txt(tra_grid, name='train'):
     """
     user = 0
     day = [str(int(20200901+i)) for i in range(len(tra_grid))]
-    file_handle = open('data/{}.txt'.format(name), mode='w')
+    file_handle = open('{}.txt'.format(name), mode='w')
     for tra_ in range(len(tra_grid)):
         tra = ""
         for i in tra_grid[tra_]:
@@ -156,14 +200,14 @@ def save2txt(tra_grid, name='train'):
         tra_str = str(user) + "\t" + str(day[tra_]) + "\t" + tra + "\n"
         file_handle.writelines(tra_str)
     file_handle.close()
-    print("保存到 data/{}.txt".format(name))
+    print("保存到 {}.txt".format(name))
     return
 
 
 def random_mask(tra_lists, tra_length=48, mask_num=10):
     """
     mask 一部分
-    :param tra_lists:
+    :param tra_lists: 多个用户？
     :param tra_length:
     :param mask_num:
     :return:
@@ -175,7 +219,7 @@ def random_mask(tra_lists, tra_length=48, mask_num=10):
             if i not in mask_list:
                 mask_list.append(i)
         for i in range(mask_num):
-            tra_lists[tra][mask_list[i] + 240] = "<m>"
+            tra_lists[tra][mask_list[i] + len(tra_lists[tra]) - tra_length] = "<m>"
     return tra_lists
 
 

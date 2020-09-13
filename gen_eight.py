@@ -41,8 +41,8 @@ def get_distance(lat0, lng0, lat1, lng1):
 
 
 RADIUS_2 = get_distance(RADIUS_2_LAT, RADIUS_2_LNG, RADIUS_1_LAT, RADIUS_1_LNG) - RADIUS_1
-print("两圆心距离:{}km".format(get_distance(RADIUS_1_LAT, RADIUS_1_LNG, RADIUS_2_LAT, RADIUS_2_LNG)))
-print("圆1半径:{}km, 圆2半径:{}km".format(RADIUS_1, RADIUS_2))
+# print("两圆心距离:{}km".format(get_distance(RADIUS_1_LAT, RADIUS_1_LNG, RADIUS_2_LAT, RADIUS_2_LNG)))
+# print("圆1半径:{}km, 圆2半径:{}km".format(RADIUS_1, RADIUS_2))
 ANG = geoDegree(RADIUS_1_LNG, RADIUS_1_LAT, RADIUS_2_LNG, RADIUS_2_LAT)  # pi / 4
 
 
@@ -165,7 +165,8 @@ def generate_eightshaped_tra(turns, arc, ):
     :return: 列表 tra_list = [(lng,lat),....]
     """
     # TODO(zf)：arc 匀速否？
-
+    print("两圆心距离:{}km".format(get_distance(RADIUS_1_LAT, RADIUS_1_LNG, RADIUS_2_LAT, RADIUS_2_LNG)))
+    print("圆1半径:{}km, 圆2半径:{}km".format(RADIUS_1, RADIUS_2))
     tra_list = []
     angle_in, angle_out = in_out_point()
     next_lng, next_lat, pre_angle = next_point_clw(0, angle_in - ANG,
@@ -217,4 +218,5 @@ def generate_eightshaped_tra(turns, arc, ):
 
 # tra_e = generate_eightshaped_tra(2, 15)
 # imagefigure(tra_e)
-
+tra_o = generate_eightshaped_tra(4, 10)
+print(len(tra_o))

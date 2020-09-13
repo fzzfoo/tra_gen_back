@@ -47,7 +47,7 @@ def imagefigure(tra=None, tras=None, name='other', grid_cor=None):
                                   })
 
         my_map.add_child(gj)
-    my_map.save('data/map/{}_map.html'.format(name))
+    my_map.save(name + 'map.html')
 
 
 def geoDegree(lng1, lat1, lng2, lat2):

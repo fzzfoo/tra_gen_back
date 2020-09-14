@@ -121,21 +121,6 @@ def get_vocab(tra_lists, name):
 # print(tra_e)
 # print(tra_es)
 
-# tra_grid = random_mask(cut_tra(get_grid_num(tra_es, 10)))
-# print(tra_grid)
-# print(len(tra_grid))
-# print(len(tra_grid[0]))
-# save2txt(tra_grid)
-
-
-# tra_single = tra_conact(tra_day=6, tra_len=48)  # 288
-# print(tra_single)
-# tra_s = generate_history_trajectory(tra_single, 300)  # 条数
-# tra_grid = get_grid_num(tra_s, 10)  # 网格大小 km
-# tra_cut = cut_tra(tra_grid)
-# get_vocab(tra_cut)
-# tra_mask = random_mask(tra_cut, tra_length=48, mask_num=10)  # 后48 mask 10
-# save2txt(tra_mask, name='8.validate')
 
 def mkdirs(name):
     if os.path.exists('data/{}'.format(name)):
@@ -149,9 +134,7 @@ def mkdirs(name):
     return 'data/{}/'.format(name)
 
 
-def generate(train_num=3000, test_num=600, validate_num=300, name='98'):
-    tra_all = []
-
+def generate(train_num=3000, test_num=600, validate_num=300, name='1w'):
     num = [train_num, test_num, validate_num]
     name = mkdirs(name)
     sys.stdout = Logger('{}log.txt'.format(name))  # 日志信息
@@ -168,7 +151,7 @@ def generate(train_num=3000, test_num=600, validate_num=300, name='98'):
     #     tra_mask = random_mask(tra_cut, tra_length=48, mask_num=10)  # 后48 mask 10
     #     save2txt(tra_mask, name=name_list[i])
     #     tra_all += tra_mask
-    tra_single = tra_conact(tra_day=6, dist=10, circle_num=4, tra_len=98)  # 生成一条 6*48=288
+    tra_single = tra_conact(tra_day=6, dist=10, circle_num=4000, tra_len=98)  # 生成一条 6*48=288
     tra_s = generate_history_trajectory(tra_single, train_num+test_num+validate_num)  # 生成多条
     # tra_s = same_tra(tra_single, train_num+test_num+validate)  # 每条相同
     tra_grid, grid_cor = get_grid_num(tra_s, 5, name=name)  # 转成网格 km
@@ -180,7 +163,7 @@ def generate(train_num=3000, test_num=600, validate_num=300, name='98'):
     save2txt(tra_mask[num[0]:num[0]+num[1]], name=name_list[1])
     save2txt(tra_mask[num[0]+num[1]:], name=name_list[2])
     get_vocab(tra_mask, name=name)
-    print("轨迹长度48->98")
+    print("1w个点 测试 内存 显存")
     return
 
 

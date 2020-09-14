@@ -18,6 +18,13 @@ def args_of_eight():
     # 给定两圆坐标及一圆半径，可得另一半径
     parser.add_argument('--RANDOM_ERR', type=float, default=0.01, help='经纬度误差，非完整圆')
 
+    parser.add_argument('--circle_num', type=int, default=2, help='8字转几圈')
+    parser.add_argument('--day_num', type=int, default=6, help='day_num条轨迹拼接成一条数据')
+    parser.add_argument('--dist', type=float, default=10, help='轨迹上两点之间距离 km')
+    parser.add_argument('--seq_length', type=int, default=48, help='每条轨迹几个点')
+    parser.add_argument('--grid_length', type=int, default=5, help='网格大小，km')
+    parser.add_argument('--mask_num', type=int, default=10, help='mask点个数')
+
     args_es = parser.parse_args()  # es = eight shaped
     # print(args_es)
 

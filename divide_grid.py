@@ -1,6 +1,7 @@
 import numpy as np
 from math import sin, asin, cos, radians, fabs, sqrt, pi, degrees
 from gen_eight import get_distance
+import random
 
 # 给一组数据 确定左上右下边界 划分网格
 EARTH_RADIUS = 6371.0
@@ -204,22 +205,53 @@ def save2txt(tra_grid, name='train'):
     return
 
 
-def random_mask(tra_lists, tra_length=48, mask_num=10):
+def random_mask(tra_lists, tra_length=48, mask_num=10, segment=10, mode='random'):
     """
     mask 一部分
+    :param mode:
+    :param segment:
     :param tra_lists: 多个用户？
     :param tra_length:
     :param mask_num:
     :return:
     """
-    for tra in range(len(tra_lists)):
-        a = np.random.randint(low=0, high=tra_length, size=mask_num * 2)
-        mask_list = []
-        for i in a:
-            if i not in mask_list:
-                mask_list.append(i)
-        for i in range(mask_num):
-            tra_lists[tra][mask_list[i] + len(tra_lists[tra]) - tra_length] = "<m>"
-    return tra_lists
+    if mode == "random":  # 随机mask
+        for tra in range(len(tra_lists)):
+            a = np.random.randint(low=0, high=tra_length, size=mask_num * 2)
+            mask_list = []
+            for i in a:
+                if i not in mask_list:
+                    mask_list.append(i)
+            for i in range(mask_num):
+                tra_lists[tra][mask_list[i] + len(tra_lists[tra]) - tra_length] = "<m>"
+        return tra_lists
 
+    # TODO：连续mask
+    if mode == "seg":  # 连续mask
+        tra_a = []
+        for tra in tra_lists:
+            # mask 数
+            seg_num = []
+            for i in range(segment):
+                seg_num.append(1)
+            for j in range(mask_num - segment):
+                seg_num[random.randint(0, segment-1)] += 1
+            # 没mask 数
+            add_num = []
+            for i in range(segment + 1):
+                add_num.append(1)
+            for j in range(len(tra) - mask_num - segment - 1):
+                add_num[random.randint(0, segment)] += 1
+
+            tra_ = []
+            start = 0
+            for i in seg_num:
+                end = start + add_num[i]
+                tra_ += tra[start:end]
+                for j in range(seg_num[i]):
+                    tra_.append("<m>")
+                start = end + seg_num[i]
+            tra_ += tra[start:]
+            tra_a.append(tra_)
+        return tra_a
 

@@ -218,5 +218,8 @@ def generate_eightshaped_tra(turns, arc, ):
 
 # tra_e = generate_eightshaped_tra(2, 15)
 # imagefigure(tra_e)
-tra_o = generate_eightshaped_tra(4000, 10)
+tra_o = generate_eightshaped_tra(2, 10)
 print(len(tra_o))
+
+
+

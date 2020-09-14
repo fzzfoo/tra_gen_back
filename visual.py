@@ -7,6 +7,16 @@ import math
 
 def imagefigure(tra=None, tras=None, name='other', grid_cor=None):
     # tras多条   tra 一条
+    """
+    格式
+    多条：[[(long,lat),(long,lat),(long,lat).......], [...], [...], ......]
+    一条：[(long,lat),(long,lat),(long,lat).......]
+    :param tra:
+    :param tras:
+    :param name:
+    :param grid_cor:
+    :return:
+    """
     if tra is not None:
         my_map = folium.Map(location=[tra[0][1], tra[-1][0]], zoom_start=9, control_scale=True)
     elif tras is not None:

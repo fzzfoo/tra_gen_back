@@ -11,6 +11,7 @@ import numpy as np
 
 EARTH_RADIUS = 6371.0  # 地球半径 6371
 
+
 class Logger(object):
     def __init__(self, filename="Default.log"):
         self.terminal = sys.stdout
@@ -141,16 +142,6 @@ def generate(train_num=3000, test_num=600, validate_num=300, name='1w'):
     print(name)
     print("train:{}  test:{}  validate:{}".format(train_num, test_num, validate_num))
     name_list = [name + "train", name + "test", name + "validate"]
-    # for i in range(3):
-    #     tra_single = tra_conact(tra_day=6, tra_len=48)  # 生成一条 6*48=288
-    #     tra_s = generate_history_trajectory(tra_single, num[i])  # 生成条数
-    #     # imagefigure(tra_single, tra_s[:5], name=name_list[i])  # 显示 5条
-    #     imagefigure(tra_single, name=name_list[i])  # 显示 6day
-    #     tra_grid = get_grid_num(tra_s, 1)  # 网格大小 km
-    #     tra_cut = cut_tra(tra_grid)  # 截断
-    #     tra_mask = random_mask(tra_cut, tra_length=48, mask_num=10)  # 后48 mask 10
-    #     save2txt(tra_mask, name=name_list[i])
-    #     tra_all += tra_mask
     tra_single = tra_conact(tra_day=6, dist=10, circle_num=4000, tra_len=98)  # 生成一条 6*48=288
     tra_s = generate_history_trajectory(tra_single, train_num+test_num+validate_num)  # 生成多条
     # tra_s = same_tra(tra_single, train_num+test_num+validate)  # 每条相同
@@ -169,5 +160,9 @@ def generate(train_num=3000, test_num=600, validate_num=300, name='1w'):
 
 generate()
 
+# TODO:
+#  不同masknum： 不同的masknum能否运行？
+#  不同稀疏程度 ： 调整两点距离，生成再拼接？
+#  连续缺失(混合？)：mode="seg"
 
 

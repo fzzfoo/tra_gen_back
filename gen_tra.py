@@ -3,7 +3,7 @@ import random
 from gen_eight import generate_eightshaped_tra
 from gen_linear import generate_linear_tra
 from visual import imagefigure
-from tra_process import get_boundary, get_grid_num, save2txt, cut_tra, random_mask
+from tra_process import get_boundary, get_grid_num, save2txt, cut_tra, random_mask, sample
 import os
 import sys
 import numpy as np
@@ -64,6 +64,7 @@ def tra_conact(tra_day=6, circle_num=2, dist=10, tra_len=48, mode="gen", path="d
             tra_o = generate_eightshaped_tra(circle_num, dist)[:tra_len]
         elif mode == "load":
             tra_o = load_csv(path)
+            # tra_o = sample(tra_list=[tra_o], sample_num=40, mode="average")[0]  # 降低采样率
         tra += tra_o
     return tra
 
@@ -135,6 +136,9 @@ def load_csv(path=None):
     return tra
 
 
+# def save_csv(tra)
+
+
 def divide_data(tra, name, num):
     """
     划分训练测试验证，并保存
@@ -171,14 +175,17 @@ def generate(train_num=3000, test_num=600, validate_num=300, name='t_100_5'):
     # tra_mask += tra_mask_
     divide_data(tra=tra_mask, name=name_list, num=num_list)
     get_vocab(tra_mask, name=name)
-    print("t1 100 个点 连续mask10个")
+    print("t1 网格5 连续mask10个")
     return
 
 
 generate()
 
 # TODO:
-#  不同masknum： 不同的masknum能否运行？
-#  不同稀疏程度 ： 调整两点距离，生成再拼接？  网格问题
-#  连续缺失(混合？)：mode="seg"
+#  不同masknum： 不同的masknum能否运行？  可以 效果:0.2?
+#  不同稀疏程度 ： 调整两点距离，生成再拼接？  网格问题__
+#  网格向坐标映射： 中心点 & meanshift      存轨迹 建立映射字典 日期作为唯一标识
+#  写入csv: 增强的轨迹，mask后的轨迹，补全的轨迹，
+
+
 

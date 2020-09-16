@@ -52,10 +52,7 @@ def imagefigure(tra=None, tras=None, name='other', grid_cor=None):
 
     my_map.add_child(folium.LatLngPopup())
     if grid_cor is not None:
-        gj = folium.GeoJson(data={"type": "MultiLineString",
-                                  "coordinates": grid_cor
-                                  })
-
+        gj = folium.GeoJson(data={"type": "MultiLineString","coordinates": grid_cor})
         my_map.add_child(gj)
     my_map.save(name + 'map.html')
 

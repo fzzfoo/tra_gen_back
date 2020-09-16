@@ -82,21 +82,47 @@ def concat_txt(name="concat"):
     file_handle.close()
     print("保存到 data/concat/{}.txt".format(name))
 
-tra = []
-path = "data/1.csv"
-with open(path) as f:
-    reader = csv.reader(f)
-    for row in reader:
-        # print(row)
-        tra.append((float(row[0]), float(row[1])))
 
-print(tra)
-print(len(tra))
-imagefigure(tra=tra, tras=None, name='origin', grid_cor=None)
-from tra_process import sample
-ss = sample(tra_list=[tra], sample_num=30, mode="average")
-imagefigure(tra=ss[0], tras=None, name='later', grid_cor=None)
+# tra = []
+# path = "data/2.csv"
+# with open(path, encoding='UTF-8') as f:
+#     reader = csv.reader(f)
+#     for row in reader:
+#         # print(row)
+#         tra.append((float(row[0]), float(row[1])))
 
-print(len(ss[0]))
-print(ss[0])
+# print(tra)
+# print(len(tra))
+# imagefigure(tra=tra, tras=None, name='origin2', grid_cor=None)
+# from tra_process import sample
+# ss = sample(tra_list=[tra], sample_num=40, mode="average")
+# imagefigure(tra=ss[0], tras=None, name='later', grid_cor=None)
+#
+# print(len(ss[0]))
+# print(ss[0])
+
+# f = open('aa.csv', 'w', encoding='utf-8')
+# # 2. 基于文件对象构建 csv写入对象
+# csv_writer = csv.writer(f)
+# # 3. 构建列表头
+# csv_writer.writerow(["姓名", "年龄", "性别"])
+# # 4. 写入csv文件内容
+# csv_writer.writerow(["l", '18', '男'])
+# csv_writer.writerow(["c", '20', '男'])
+# csv_writer.writerow(["w", '22', '女'])
+# # 5. 关闭文件
+# f.close()
+
+
+def save2csv(tra, name="aaa"):
+    f = open('{}.csv'.format(name), 'w', encoding='utf-8')
+    csv_writer = csv.writer(f)
+    # csv_writer.writerow(["姓名", "年龄", "性别"])
+    for cor in tra:
+        csv_writer.writerow([cor[0], cor[1]])
+    f.close()
+    print("{} Saved".format(name))
+    return
+
+
 

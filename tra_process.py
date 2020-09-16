@@ -253,5 +253,51 @@ def random_mask(tra_lists, tra_length=48, mask_num=10, segment=10, mode='random'
                 start = end + seg_num[i]
             tra_ += tra[start:]
             tra_a.append(tra_)
-        return tra_a
+        tra_lists = tra_a
+        return tra_lists
+
+
+def sum_distance(tra):
+    """
+    轨迹中，两点之间最大距离
+    :param tra:
+    :return:
+    """
+    dis_sum = 0
+    for i in range(len(tra) - 1):
+        dis_sum += get_distance(tra[i][1], tra[i][0], tra[i+1][1], tra[i+1][0])
+    return dis_sum
+
+
+def sample(tra_list, sample_num):
+    """
+    圆降低采样率
+    :param tra_list:
+    :param sample_num:
+    :return:
+    """
+    tra_res = []
+    for tra in tra_list:
+        tra_c = [tra[0]]
+        dis_sum = sum_distance(tra)  # 轨迹总长
+        print("总长", dis_sum)
+        dist = dis_sum / sample_num
+        for cor in range(len(tra)):
+            # print(cor)
+            # print(tra[cor][1], tra[cor][0], tra[-1][1], tra[-1][0])
+            dist_ = get_distance(tra[cor][1], tra[cor][0], tra_c[-1][1], tra_c[-1][0])
+            if dist_ >= dist:
+                tra_c.append(tra[cor-1])
+        tra_res.append(tra_c)
+    return tra_res
+
+
+from gen_eight import generate_eightshaped_tra
+tra_o = generate_eightshaped_tra(2, 10)
+tra_ = []
+tra_.append(tra_o)
+tra_.append(tra_o)
+aaa = sample(tra_, 20)
+print(aaa)
+print(len(aaa[0]))
 

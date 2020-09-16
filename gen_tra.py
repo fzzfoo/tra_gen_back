@@ -3,7 +3,7 @@ import random
 from gen_eight import generate_eightshaped_tra
 from gen_linear import generate_linear_tra
 from visual import imagefigure
-from divide_grid import get_boundary, get_grid_num, save2txt, cut_tra, random_mask
+from tra_process import get_boundary, get_grid_num, save2txt, cut_tra, random_mask
 import os
 import sys
 import numpy as np
@@ -135,26 +135,29 @@ def mkdirs(name):
     return 'data/{}/'.format(name)
 
 
-def generate(train_num=3000, test_num=600, validate_num=300, name='1w'):
+def generate(train_num=3000, test_num=600, validate_num=300, name='mask_10_lx'):
     num = [train_num, test_num, validate_num]
     name = mkdirs(name)
     sys.stdout = Logger('{}log.txt'.format(name))  # 日志信息
     print(name)
     print("train:{}  test:{}  validate:{}".format(train_num, test_num, validate_num))
     name_list = [name + "train", name + "test", name + "validate"]
-    tra_single = tra_conact(tra_day=6, dist=10, circle_num=4000, tra_len=98)  # 生成一条 6*48=288
+    tra_single = tra_conact(tra_day=6, dist=10, circle_num=2, tra_len=48)  # 生成一条 6*48=288
     tra_s = generate_history_trajectory(tra_single, train_num+test_num+validate_num)  # 生成多条
     # tra_s = same_tra(tra_single, train_num+test_num+validate)  # 每条相同
     tra_grid, grid_cor = get_grid_num(tra_s, 5, name=name)  # 转成网格 km
     # imagefigure(tra_single[:48], grid_cor=grid_cor)  # 显示yi条
-    imagefigure(tra=None, tras=visual_data(tra_s[:10], start=0, end=98), grid_cor=grid_cor, name=name)
-    tra_cut = cut_tra(tra_grid, length=98*6)  # 截断
-    tra_mask = random_mask(tra_cut, tra_length=98, mask_num=10)  # 后48 mask 10
+    imagefigure(tra=None, tras=visual_data(tra_s[:10], start=0, end=48), grid_cor=grid_cor, name=name)
+    tra_cut = cut_tra(tra_grid, length=48*6)  # 截断
+    tra_mask = random_mask(tra_cut, tra_length=48, mask_num=10, mode='seg', segment=1)  # 后48 mask 10
+    # tra_mask_ = random_mask(tra_cut[1950:], tra_length=48, mask_num=15)
+    # tra_mask += tra_mask_
+    random.shuffle(tra_mask)
     save2txt(tra_mask[:num[0]], name=name_list[0])
     save2txt(tra_mask[num[0]:num[0]+num[1]], name=name_list[1])
     save2txt(tra_mask[num[0]+num[1]:], name=name_list[2])
     get_vocab(tra_mask, name=name)
-    print("1w个点 测试 内存 显存")
+    print("48个点， 连续mask10个点 ")
     return
 
 
@@ -162,7 +165,6 @@ generate()
 
 # TODO:
 #  不同masknum： 不同的masknum能否运行？
-#  不同稀疏程度 ： 调整两点距离，生成再拼接？
+#  不同稀疏程度 ： 调整两点距离，生成再拼接？  网格问题
 #  连续缺失(混合？)：mode="seg"
-
 

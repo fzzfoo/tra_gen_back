@@ -4,6 +4,7 @@ from args import args_of_eight
 from visual import imagefigure, geoDegree
 
 
+
 args = args_of_eight()
 EARTH_RADIUS = args.EARTH_RADIUS  # 地球半径 6371
 
@@ -218,8 +219,8 @@ def generate_eightshaped_tra(turns, arc, ):
 
 # tra_e = generate_eightshaped_tra(2, 15)
 # imagefigure(tra_e)
-tra_o = generate_eightshaped_tra(2, 10)
-print(len(tra_o))
+# tra_o = generate_eightshaped_tra(2, 10)
+# print(len(tra_o))
 
 
 

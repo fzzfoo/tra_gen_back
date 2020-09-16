@@ -7,6 +7,7 @@ from tra_process import get_boundary, get_grid_num, save2txt, cut_tra, random_ma
 import os
 import sys
 import numpy as np
+import csv
 
 
 EARTH_RADIUS = 6371.0  # 地球半径 6371
@@ -55,13 +56,15 @@ def generate_history_trajectory(arr, num):
     return res
 
 
-def tra_conact(tra_day=6, circle_num=2, dist=10, tra_len=48,):
+def tra_conact(tra_day=6, circle_num=2, dist=10, tra_len=48, mode="gen", path="data/1.csv"):
     tra = []
-    print("轨迹两点距离:{}".format(dist))
     for i in range(tra_day):
-        tra_o = generate_eightshaped_tra(circle_num, dist)[:tra_len]
+        if mode == "gen":
+            print("轨迹两点距离:{}".format(dist))
+            tra_o = generate_eightshaped_tra(circle_num, dist)[:tra_len]
+        elif mode == "load":
+            tra_o = load_csv(path)
         tra += tra_o
-    # print(len(tra))
     return tra
 
 
@@ -107,21 +110,6 @@ def get_vocab(tra_lists, name):
 
     return
 
-# tra_e = generate_eightshaped_tra(2, 10)
-# imagefigure(tra_e)
-# print(len(tra_e))
-# tra_l_start = generate_linear_tra([113.7085, 36.3211], [tra_e[0][0], tra_e[0][1]],  15)   # [113.78698235542979, 40],
-# tra_l_end = generate_linear_tra([tra_e[-1][0], tra_e[-1][1]], [118.7443, 36.3764],   15)
-# tra_l_r = tra_l[len(tra_l)-2::-1]  # 倒置
-# imagefigure(tra_l_start[:-1] + tra_e + tra_l_end[1:])
-# tra_es = generate_history_trajectory(tra_e, 9)
-# imagefigure(tra_e, tra_es)
-# min_long, min_lat, max_long, max_lat = get_boundary(tra_e)
-# print("-------------------------")
-# min_long, min_lat, max_long, max_lat = get_boundary(tra_es)
-# print(tra_e)
-# print(tra_es)
-
 
 def mkdirs(name):
     if os.path.exists('data/{}'.format(name)):
@@ -135,29 +123,55 @@ def mkdirs(name):
     return 'data/{}/'.format(name)
 
 
-def generate(train_num=3000, test_num=600, validate_num=300, name='mask_10_lx'):
-    num = [train_num, test_num, validate_num]
+def load_csv(path=None):
+    tra = []
+    # path = "data/1.csv"
+    with open(path) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            # print(row)
+            tra.append((float(row[0]), float(row[1])))
+    print("载入轨迹{}, 共{}个点".format(path, len(tra)))
+    return tra
+
+
+def divide_data(tra, name, num):
+    """
+    划分训练测试验证，并保存
+    :param tra:
+    :param name:
+    :param num:
+    :return:
+    """
+    random.shuffle(tra)
+    save2txt(tra[:num[0]], name=name[0])
+    save2txt(tra[num[0]:num[0]+num[1]], name=name[1])
+    save2txt(tra[num[0]+num[1]:], name=name[2])
+    print("All saved")
+    return
+
+
+def generate(train_num=3000, test_num=600, validate_num=300, name='t_100_5'):
+    num_list = [train_num, test_num, validate_num]
     name = mkdirs(name)
     sys.stdout = Logger('{}log.txt'.format(name))  # 日志信息
     print(name)
     print("train:{}  test:{}  validate:{}".format(train_num, test_num, validate_num))
     name_list = [name + "train", name + "test", name + "validate"]
-    tra_single = tra_conact(tra_day=6, dist=10, circle_num=2, tra_len=48)  # 生成一条 6*48=288
+    tra_single = tra_conact(tra_day=6, dist=10, circle_num=4, tra_len=100, mode="load", path="data/1.csv")
+    # 生成一条数据 6*48=288  或者读取数据
     tra_s = generate_history_trajectory(tra_single, train_num+test_num+validate_num)  # 生成多条
     # tra_s = same_tra(tra_single, train_num+test_num+validate)  # 每条相同
     tra_grid, grid_cor = get_grid_num(tra_s, 5, name=name)  # 转成网格 km
-    # imagefigure(tra_single[:48], grid_cor=grid_cor)  # 显示yi条
-    imagefigure(tra=None, tras=visual_data(tra_s[:10], start=0, end=48), grid_cor=grid_cor, name=name)
-    tra_cut = cut_tra(tra_grid, length=48*6)  # 截断
-    tra_mask = random_mask(tra_cut, tra_length=48, mask_num=10, mode='seg', segment=1)  # 后48 mask 10
+    # imagefigure(tra=tra_single[:100], grid_cor=grid_cor, name=name)  # 显示yi条
+    imagefigure(tra=None, tras=visual_data(tra_s[:5], start=0, end=100), grid_cor=grid_cor, name=name)
+    tra_cut = cut_tra(tra_grid, length=100*6)  # 截断
+    tra_mask = random_mask(tra_cut, tra_length=100, mask_num=10, mode='seg', segment=1)  # 后48 mask 10
     # tra_mask_ = random_mask(tra_cut[1950:], tra_length=48, mask_num=15)
     # tra_mask += tra_mask_
-    random.shuffle(tra_mask)
-    save2txt(tra_mask[:num[0]], name=name_list[0])
-    save2txt(tra_mask[num[0]:num[0]+num[1]], name=name_list[1])
-    save2txt(tra_mask[num[0]+num[1]:], name=name_list[2])
+    divide_data(tra=tra_mask, name=name_list, num=num_list)
     get_vocab(tra_mask, name=name)
-    print("48个点， 连续mask10个点 ")
+    print("t1 100 个点 连续mask10个")
     return
 
 

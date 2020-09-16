@@ -239,14 +239,15 @@ def random_mask(tra_lists, tra_length=48, mask_num=10, segment=10, mode='random'
             # 没mask 数
             add_num = []
             for i in range(segment + 1):
-                add_num.append(1)
-            for j in range(len(tra) - mask_num - segment - 1):
+                add_num.append(tra_length*5)
+            for j in range(tra_length - mask_num - segment - 1):
                 add_num[random.randint(0, segment)] += 1
 
             tra_ = []
             start = 0
-            for i in seg_num:
-                end = start + add_num[i]
+
+            for i in range(len(seg_num)):
+                end = start + add_num[i]  # + tra_length*5
                 tra_ += tra[start:end]
                 for j in range(seg_num[i]):
                     tra_.append("<m>")
@@ -257,19 +258,28 @@ def random_mask(tra_lists, tra_length=48, mask_num=10, segment=10, mode='random'
         return tra_lists
 
 
-def sum_distance(tra):
+def s_distance(tra, sample_num, mode='average'):
     """
     轨迹中，两点之间最大距离
+    :param mode:
+    :param sample_num:
     :param tra:
     :return:
     """
     dis_sum = 0
-    for i in range(len(tra) - 1):
-        dis_sum += get_distance(tra[i][1], tra[i][0], tra[i+1][1], tra[i+1][0])
+    if mode == "average":
+        for i in range(len(tra) - 1):
+            dis_sum += get_distance(tra[i][1], tra[i][0], tra[i+1][1], tra[i+1][0])
+        print("轨迹总长，", dis_sum)
+        dis_sum = dis_sum / sample_num
+    elif mode == "max":
+        for i in range(len(tra) - 1):
+            dis_sum = max(get_distance(tra[i][1], tra[i][0], tra[i+1][1], tra[i+1][0]), dis_sum)
+        print("最长两点，", dis_sum)
     return dis_sum
 
 
-def sample(tra_list, sample_num):
+def sample(tra_list, sample_num, mode="average"):
     """
     圆降低采样率
     :param tra_list:
@@ -279,25 +289,23 @@ def sample(tra_list, sample_num):
     tra_res = []
     for tra in tra_list:
         tra_c = [tra[0]]
-        dis_sum = sum_distance(tra)  # 轨迹总长
-        print("总长", dis_sum)
-        dist = dis_sum / sample_num
+        sample_dis = s_distance(tra, sample_num, mode=mode)  # 轨迹总长
         for cor in range(len(tra)):
             # print(cor)
             # print(tra[cor][1], tra[cor][0], tra[-1][1], tra[-1][0])
             dist_ = get_distance(tra[cor][1], tra[cor][0], tra_c[-1][1], tra_c[-1][0])
-            if dist_ >= dist:
+            if dist_ >= sample_dis:
                 tra_c.append(tra[cor-1])
         tra_res.append(tra_c)
     return tra_res
 
 
-from gen_eight import generate_eightshaped_tra
-tra_o = generate_eightshaped_tra(2, 10)
-tra_ = []
-tra_.append(tra_o)
-tra_.append(tra_o)
-aaa = sample(tra_, 20)
-print(aaa)
-print(len(aaa[0]))
+# from gen_eight import generate_eightshaped_tra
+# tra_o = generate_eightshaped_tra(2, 10)
+# tra_ = []
+# tra_.append(tra_o)
+# tra_.append(tra_o)
+# aaa = sample(tra_, 10, mode="average")
+# print(aaa)
+# print(len(aaa[0]))
 

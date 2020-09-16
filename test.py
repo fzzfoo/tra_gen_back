@@ -5,6 +5,8 @@
 # from gen_linear import generate_linear_tra
 # from visual import imagefigure
 # from gen_tra import generate_history_trajectory
+import csv
+from visual import imagefigure
 
 # train_dataset_path = "data/train.txt"
 # with open(train_dataset_path) as f:
@@ -80,7 +82,21 @@ def concat_txt(name="concat"):
     file_handle.close()
     print("保存到 data/concat/{}.txt".format(name))
 
+tra = []
+path = "data/1.csv"
+with open(path) as f:
+    reader = csv.reader(f)
+    for row in reader:
+        # print(row)
+        tra.append((float(row[0]), float(row[1])))
 
+print(tra)
+print(len(tra))
+imagefigure(tra=tra, tras=None, name='origin', grid_cor=None)
+from tra_process import sample
+ss = sample(tra_list=[tra], sample_num=30, mode="average")
+imagefigure(tra=ss[0], tras=None, name='later', grid_cor=None)
 
-
+print(len(ss[0]))
+print(ss[0])
 
